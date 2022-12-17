@@ -1,10 +1,11 @@
-
-
-function GameOver({winner}) {
+function GameOver(props) {
     return (
-        <div>
-            <div className={"gameOver"}>
-                {winner} is the winner!!!
+        <div className="popup-box">
+            <div className="box">
+                {props.winner}
+                <div>
+                    <button onClick={props.handleClose}>Play Again</button>
+                </div>
             </div>
         </div>
     )

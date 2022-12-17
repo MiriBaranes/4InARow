@@ -2,6 +2,7 @@ import ColumnBord from "./ColumnBord";
 import React from "react";
 import "./bord-style.css"
 import GameOver from "./GameOver";
+import {Form} from "react-router-dom";
 
 const COLUMN = [0, 1, 2, 3, 4, 5, 6];
 const ROWS = [0, 1, 2, 3, 4, 5];
@@ -29,6 +30,7 @@ class BoardGame extends React.Component {
     }
     state = {
         columns: this.makeArrayOfObject(),
+        fullColumn:0,
         turn: 0,
         gameOver: false
     }
@@ -54,7 +56,7 @@ class BoardGame extends React.Component {
                 }
             }))
         }
-        return counter === SEQUENCE;
+        return counter >= SEQUENCE;
     }
 
     getVector = (x, y, m) => {
@@ -65,7 +67,6 @@ class BoardGame extends React.Component {
                 result.push([xi, tempY]);
             }
         }
-        console.log(result);
         return result;
     }
     checkWinnInColumn = (x, y, type) => {
@@ -92,13 +93,16 @@ class BoardGame extends React.Component {
     makeChangePlayers = (c) => {
         const element = this.findArrayElementByType(c);
         if (element === undefined) {
+            this.setState({
+                fullColumn: this.state.fullColumn+1
+            })
             alert("Is Full Column");
         } else {
             element.type = this.state.turn % 2
             const x = element.place[X_INDEX];
             const y = element.place[Y_INDEX];
             const thereIsWinner = this.checkWinner(x, y, element.type);
-            if (thereIsWinner) {
+            if (thereIsWinner || this.state.fullColumn===COLUMN) {
                 this.setState({
                     gameOver: true
                 })
@@ -108,17 +112,20 @@ class BoardGame extends React.Component {
             });
         }
     }
-    getNameOfWinner = () =>{
-        return this.state.turn%2 ===0 ? "yellow player" : "red player"
+    getNameOfWinner = () => {
+        if (this.state.fullColumn===COLUMN){
+            return "NO WINNER";
+        }
+        return this.state.turn % 2 === 0 ? "yellow player WIN" : "red player WIN"
     }
-    componentWillUnmount() {
-        this.gameOver= false;
+    resetForm = () => {
+        this.setState(this.baseState);
     }
 
     render() {
         return (
-            <div className={"boardGame"} >
-                {!this.state.gameOver ?
+            <form>
+                <div className={"boardGame"}>
                     <div>
                         {this.state.columns.map((column, index) => {
                             return (<ColumnBord onClick={() => this.makeChangePlayers(index)}
@@ -126,13 +133,10 @@ class BoardGame extends React.Component {
                                                 column={index} key={index}> </ColumnBord>
                             )
                         })}
+                        {this.state.gameOver && <GameOver winner={this.getNameOfWinner()} handleClose={this.resetForm}/>}
                     </div>
-                    :
-                    <div>
-                        <GameOver winner={this.getNameOfWinner()}> </GameOver>
-                    </div>
-                }
-            </div>
+                </div>
+            </form>
         )
     }
 }
