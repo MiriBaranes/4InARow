@@ -2,7 +2,7 @@ import ColumnBord from "./ColumnBord";
 import React from "react";
 import "./bord-style.css"
 import GameOver from "./GameOver";
-import {Form} from "react-router-dom";
+import Header from "./Header";
 
 const COLUMN = [0, 1, 2, 3, 4, 5, 6];
 const ROWS = [0, 1, 2, 3, 4, 5];
@@ -14,7 +14,11 @@ const SLOPE_ON_LINE = 0;
 const X_INDEX = 0;
 const Y_INDEX = 1;
 const NO_CLICKED = -1;
-
+const PLAYER_1_WIN = "yellow player win";
+const PLAYER_2_WIN = "red player win";
+const NO_WINNER = "NO WINNER";
+const GAME_NAME = "Four In A Row Game";
+const CLASS_NAME = "boardGame";
 
 class BoardGame extends React.Component {
     makeArrayOfObject = () => {
@@ -30,9 +34,10 @@ class BoardGame extends React.Component {
     }
     state = {
         columns: this.makeArrayOfObject(),
-        fullColumn:0,
+        fullColumn: 0,
         turn: 0,
-        gameOver: false
+        gameOver: false,
+        winnMessage: ""
     }
 
 
@@ -86,37 +91,42 @@ class BoardGame extends React.Component {
 
     findArrayElementByType(c) {
         return this.state.columns[c].find((element) => {
-            return element.type === -1;
+            return element.type === NO_CLICKED;
         })
     }
 
     makeChangePlayers = (c) => {
         const element = this.findArrayElementByType(c);
         if (element === undefined) {
-            this.setState({
-                fullColumn: this.state.fullColumn+1
-            })
             alert("Is Full Column");
         } else {
             element.type = this.state.turn % 2
             const x = element.place[X_INDEX];
             const y = element.place[Y_INDEX];
-            const thereIsWinner = this.checkWinner(x, y, element.type);
-            if (thereIsWinner || this.state.fullColumn===COLUMN) {
-                this.setState({
-                    gameOver: true
-                })
-            }
+            console.log(this.state.turn)
+            this.thereIsWinner(x, y, element.type);
             this.setState({
                 turn: this.state.turn + 1,
             });
         }
     }
-    getNameOfWinner = () => {
-        if (this.state.fullColumn===COLUMN){
-            return "NO WINNER";
+    thereIsWinner = (x, y, type) => {
+        const thereIsWinner = this.checkWinner(x, y, type);
+        if (thereIsWinner || this.state.turn === COLUMN.length * ROWS.length - 1) {
+            this.setState({
+                gameOver: true
+            })
+            let message = NO_WINNER;
+            if (thereIsWinner) {
+                message = this.getNameOfWinner();
+            }
+            this.setState({
+                winnMessage: message
+            })
         }
-        return this.state.turn % 2 === 0 ? "yellow player WIN" : "red player WIN"
+    }
+    getNameOfWinner = () => {
+        return this.state.turn % 2 === 0 ? PLAYER_2_WIN : PLAYER_1_WIN
     }
     resetForm = () => {
         this.setState(this.baseState);
@@ -125,7 +135,8 @@ class BoardGame extends React.Component {
     render() {
         return (
             <form>
-                <div className={"boardGame"}>
+                <div className={CLASS_NAME}>
+                    <Header header={GAME_NAME}></Header>
                     <div>
                         {this.state.columns.map((column, index) => {
                             return (<ColumnBord onClick={() => this.makeChangePlayers(index)}
@@ -133,7 +144,8 @@ class BoardGame extends React.Component {
                                                 column={index} key={index}> </ColumnBord>
                             )
                         })}
-                        {this.state.gameOver && <GameOver winner={this.getNameOfWinner()} handleClose={this.resetForm}/>}
+                        {this.state.gameOver &&
+                            <GameOver winner={this.state.winnMessage} handleClose={this.resetForm}/>}
                     </div>
                 </div>
             </form>
