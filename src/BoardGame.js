@@ -19,9 +19,12 @@ const PLAYER_2_WIN = "red player win";
 const NO_WINNER = "NO WINNER";
 const GAME_NAME = "Four In A Row Game";
 const CLASS_NAME = "boardGame";
+const RED = "ACTIVE : RED PLAYER";
+const YELLOW = "ACTIVE : YELLOW PLAYER";
 
 class BoardGame extends React.Component {
     state = {
+        activePlayer: RED,
         columns: [],
         fullColumn: 0,
         turn: 0,
@@ -52,54 +55,30 @@ class BoardGame extends React.Component {
         })
     }
 
-
-    checkWinner = (x, y, type) => {
-        return this.checkWinnerInRowAndDiagonal(x, y, SLOPE_LEFT, type) ||
-            (this.checkWinnerInRowAndDiagonal(x, y, SLOPE_RIGHT, type)) ||
-            (this.checkWinnerInRowAndDiagonal(x, y, SLOPE_ON_LINE, type)) ||
-            this.checkWinnInColumn(x, y, type);
+    checkWinnTemp = (x, y, type) => {
+        const counterRow = 1 + this.getCounter(x, y, type, 1, 0) + this.getCounter(x, y, type, -1, 0);
+        const counterInColumn = 1 + this.getCounter(x, y, type, 0, 1) + this.getCounter(x, y, type, 0, -1);
+        const counterLeftDiag = 1 + this.getCounter(x, y, type, 1, -1) + this.getCounter(x, y, type, -1, 1);
+        const counterRightDiag = 1 + this.getCounter(x, y, type, 1, 1) + this.getCounter(x, y, type, -1, -1);
+        return counterRow >= SEQUENCE || counterInColumn >= SEQUENCE || counterLeftDiag >= SEQUENCE || counterRightDiag >= SEQUENCE;
     }
 
-
-    checkWinnerInRowAndDiagonal = (x, y, m, type) => {
-        const arrayPoints = this.getVector(x, y, m);
+    getCounter = (x, y, type, disX, disY) => {
         let counter = 0;
-        if (arrayPoints.length >= SEQUENCE) {
-            arrayPoints.map((item => {
-                if (this.state.columns[item[X_INDEX]][item[Y_INDEX]].type === type) {
-                    counter++;
-                } else if (counter < SEQUENCE) {
-                    counter = 0;
-                }
-            }))
-        }
-        return counter >= SEQUENCE;
-    }
-
-    getVector = (x, y, m) => {
-        let result = [];
-        for (let xi = 0; xi < COLUMN.length; xi++) {
-            const tempY = this.findY(x, y, m, xi);
-            if (tempY >= 0 && tempY < ROWS.length) {
-                result.push([xi, tempY]);
+        x = x + disX;
+        y = disY + y;
+        while ((x < COLUMN.length && x >= 0) && (y < ROWS.length && y >= 0)) {
+            if (this.state.columns[x][y].type === type) {
+                counter++;
+                x = x + disX;
+                y = disY + y;
+            } else {
+                break;
             }
         }
-        return result;
-    }
-    checkWinnInColumn = (x, y, type) => {
-        if (y >= 3) {
-            return (this.state.columns[x][y - 1].type === type &&
-                this.state.columns[x][y - 2].type === this.state.columns[x][y - MIN_COLUMN].type &&
-                this.state.columns[x][y - 2].type === type);
-        }
+        return counter;
     }
 
-    findB = (x, y, m) => {
-        return y - m * x;
-    }
-    findY = (x, y, m, x1) => {
-        return m * x1 + this.findB(x, y, m);
-    }
 
     findArrayElementByType(c) {
         return this.state.columns[c].find((element) => {
@@ -119,14 +98,19 @@ class BoardGame extends React.Component {
             this.thereIsWinner(x, y, element.type);
             this.setState({
                 turn: this.state.turn + 1,
+                activePlayer: this.getPlayerName(this.state.turn + 1)
             });
         }
     }
+    getPlayerName = (turn) => {
+        return turn % 2 === 0 ? RED : YELLOW;
+    }
     thereIsWinner = (x, y, type) => {
-        const thereIsWinner = this.checkWinner(x, y, type);
+        const thereIsWinner = this.checkWinnTemp(x, y, type);
+        this.checkWinnTemp(x, y, type)
         if (thereIsWinner || this.state.turn === COLUMN.length * ROWS.length - 1) {
             this.setState({
-                gameOver: true
+                gameOver: true,
             })
             let message = NO_WINNER;
             if (thereIsWinner) {
@@ -143,11 +127,17 @@ class BoardGame extends React.Component {
     resetGame = () => {
         this.setState({...this.INIT_STATE, columns: this.makeArrayOfObject()});
     }
+    setColor = () => {
+        return this.state.activePlayer === RED ? "red" : "yellow";
+    }
 
     render() {
         return (
             <div className={CLASS_NAME}>
                 <Header header={GAME_NAME}></Header>
+                <div style={{color: this.setColor(), margin: "5px"}}>
+                    {this.state.activePlayer}
+                </div>
                 <div>
                     {this.state.columns.map((column, index) => {
                         return (<ColumnBord onClick={() => this.makeChangePlayers(index)}
