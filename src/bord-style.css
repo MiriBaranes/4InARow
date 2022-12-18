@@ -79,6 +79,12 @@ button {
     background-color: blue;
     border: 1px solid black;
 }
+.smallHeader {
+    padding: 10px;
+    font-family: "Script MT Bold", serif;
+    text-align: center;
+    font-size:20px ;
+}
 
 .circle {
     margin: 20%;

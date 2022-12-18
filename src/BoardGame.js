@@ -3,6 +3,7 @@ import React from "react";
 import "./bord-style.css"
 import GameOver from "./GameOver";
 import Header from "./Header";
+import ActivePlayer from "./ActivePlayer";
 
 const COLUMN = [0, 1, 2, 3, 4, 5, 6];
 const ROWS = [0, 1, 2, 3, 4, 5];
@@ -94,12 +95,8 @@ class BoardGame extends React.Component {
             this.thereIsWinner(x, y, element.type);
             this.setState({
                 turn: this.state.turn + 1,
-                activePlayer: this.getPlayerName(this.state.turn + 1)
             });
         }
-    }
-    getPlayerName = (turn) => {
-        return turn % 2 === 0 ? RED : YELLOW;
     }
     thereIsWinner = (x, y, type) => {
         const thereIsWinner = this.checkWinnTemp(x, y, type);
@@ -118,22 +115,23 @@ class BoardGame extends React.Component {
         }
     }
     getNameOfWinner = () => {
-        return this.state.turn % 2 === 0 ? PLAYER_2_WIN : PLAYER_1_WIN
+        return this.isRedPlay() ? PLAYER_2_WIN : PLAYER_1_WIN;
     }
     resetGame = () => {
         this.setState({...this.INIT_STATE, columns: this.makeArrayOfObject()});
     }
     setColor = () => {
-        return this.state.activePlayer === RED ? "red" : "yellow";
+        return this.isRedPlay ? "red" : "yellow";
+    }
+    isRedPlay = () => {
+        return this.state.turn % 2 === 0;
     }
 
     render() {
         return (
             <div className={CLASS_NAME}>
                 <Header header={GAME_NAME}></Header>
-                <div style={{color: this.setColor(), margin: "5px"}}>
-                    {this.state.activePlayer}
-                </div>
+                <ActivePlayer isRedPlay={this.isRedPlay()} setColor={this.setColor()}/>
                 <div>
                     {this.state.columns.map((column, index) => {
                         return (<ColumnBord onClick={() => this.makeChangePlayers(index)}
