@@ -21,6 +21,19 @@ const GAME_NAME = "Four In A Row Game";
 const CLASS_NAME = "boardGame";
 
 class BoardGame extends React.Component {
+    state = {
+        columns: [],
+        fullColumn: 0,
+        turn: 0,
+        gameOver: false,
+        winnMessage: ""
+    }
+    INIT_STATE = {
+        fullColumn: 0,
+        turn: 0,
+        gameOver: false,
+        winnMessage: ""
+    }
     makeArrayOfObject = () => {
         let arr = [];
         COLUMN.map((column, xi) => {
@@ -32,12 +45,11 @@ class BoardGame extends React.Component {
         })
         return arr;
     }
-    state = {
-        columns: this.makeArrayOfObject(),
-        fullColumn: 0,
-        turn: 0,
-        gameOver: false,
-        winnMessage: ""
+
+    componentDidMount() {
+        this.setState({
+            columns: this.makeArrayOfObject()
+        })
     }
 
 
@@ -128,27 +140,25 @@ class BoardGame extends React.Component {
     getNameOfWinner = () => {
         return this.state.turn % 2 === 0 ? PLAYER_2_WIN : PLAYER_1_WIN
     }
-    resetForm = () => {
-        this.setState(this.baseState);
+    resetGame = () => {
+        this.setState({...this.INIT_STATE, columns: this.makeArrayOfObject()});
     }
 
     render() {
         return (
-            <form>
-                <div className={CLASS_NAME}>
-                    <Header header={GAME_NAME}></Header>
-                    <div>
-                        {this.state.columns.map((column, index) => {
-                            return (<ColumnBord onClick={() => this.makeChangePlayers(index)}
-                                                columnInfo={column}
-                                                column={index} key={index}> </ColumnBord>
-                            )
-                        })}
-                        {this.state.gameOver &&
-                            <GameOver winner={this.state.winnMessage} handleClose={this.resetForm}/>}
-                    </div>
+            <div className={CLASS_NAME}>
+                <Header header={GAME_NAME}></Header>
+                <div>
+                    {this.state.columns.map((column, index) => {
+                        return (<ColumnBord onClick={() => this.makeChangePlayers(index)}
+                                            columnInfo={column}
+                                            column={index} key={index}> </ColumnBord>
+                        )
+                    })}
+                    {this.state.gameOver &&
+                        <GameOver winner={this.state.winnMessage} handleClose={this.resetGame}/>}
                 </div>
-            </form>
+            </div>
         )
     }
 }
