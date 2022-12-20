@@ -2,9 +2,9 @@ import React from "react";
 
 const CLASS_NAME = "smallHeader";
 const RED_PLAYER_COLOR = "red";
-const RED_PLAYER_MESSAGE = "RED  PLAYER  IS  ACTIVE";
+const RED_PLAYER_MESSAGE = "Red Player  is  active";
 const YELLOW_PLAYER_COLOR = "yellow";
-const YELLOW_PLAYER_MESSAGE = "YELLOW  PLAYER  IS  ACTIVE";
+const YELLOW_PLAYER_MESSAGE = "Yellow  Player  is active";
 
 function ActivePlayer(props) {
     const setColor = () => {

@@ -4,7 +4,6 @@ import "./board-style.css"
 import GameOver from "./GameOver";
 import Header from "./Header";
 import ActivePlayer from "./ActivePlayer";
-
 const COLUMN = [0, 1, 2, 3, 4, 5, 6];
 const ROWS = [0, 1, 2, 3, 4, 5];
 const SEQUENCE = 4;
@@ -13,7 +12,7 @@ const Y_INDEX = 1;
 const NO_CLICKED = -1;
 const PLAYER_1_WIN = "yellow player win";
 const PLAYER_2_WIN = "red player win";
-const NO_WINNER = "NO WINNER";
+const NO_WINNER = "There is No Winner.";
 const GAME_NAME = "Four In A Row Game";
 const CLASS_NAME = "boardGame";
 
