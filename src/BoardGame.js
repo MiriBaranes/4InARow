@@ -1,6 +1,6 @@
 import ColumnBord from "./ColumnBord";
 import React from "react";
-import "./bord-style.css"
+import "./board-style.css"
 import GameOver from "./GameOver";
 import Header from "./Header";
 import ActivePlayer from "./ActivePlayer";
@@ -16,12 +16,9 @@ const PLAYER_2_WIN = "red player win";
 const NO_WINNER = "NO WINNER";
 const GAME_NAME = "Four In A Row Game";
 const CLASS_NAME = "boardGame";
-const RED = "ACTIVE : RED PLAYER";
-const YELLOW = "ACTIVE : YELLOW PLAYER";
 
 class BoardGame extends React.Component {
     state = {
-        activePlayer: RED,
         columns: [],
         fullColumn: 0,
         turn: 0,
@@ -52,7 +49,7 @@ class BoardGame extends React.Component {
         })
     }
 
-    checkWinnTemp = (x, y, type) => {
+    checkWinn = (x, y, type) => {
         const counterRow = 1 + this.getCounter(x, y, type, 1, 0) + this.getCounter(x, y, type, -1, 0);
         const counterInColumn = 1 + this.getCounter(x, y, type, 0, 1) + this.getCounter(x, y, type, 0, -1);
         const counterLeftDiag = 1 + this.getCounter(x, y, type, 1, -1) + this.getCounter(x, y, type, -1, 1);
@@ -99,8 +96,8 @@ class BoardGame extends React.Component {
         }
     }
     thereIsWinner = (x, y, type) => {
-        const thereIsWinner = this.checkWinnTemp(x, y, type);
-        this.checkWinnTemp(x, y, type)
+        const thereIsWinner = this.checkWinn(x, y, type);
+        this.checkWinn(x, y, type)
         if (thereIsWinner || this.state.turn === COLUMN.length * ROWS.length - 1) {
             this.setState({
                 gameOver: true,

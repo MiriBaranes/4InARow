@@ -1,5 +1,5 @@
 import React from "react";
-import "./bord-style.css"
+import "./board-style.css"
 
 const PLAYER_1_COLOR = 'red';
 const PLAYER_2_COLOR = 'yellow';
